@@ -6,6 +6,6 @@ export interface PaymentProvider{
 @Injectable()
 export class StripePaymentService implements PaymentProvider{
     charge(amount: number): Promise<{ success: boolean; provider: string; }> {
-        return Promise.resolve( {success:true,provider:'paypal'});
+        return Promise.resolve( {success:true,provider:'stripe'});
     }
 }
