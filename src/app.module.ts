@@ -4,14 +4,13 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PaymentModule } from './paymentservice/paymentservice.module';
 import { ReportModule } from './Report/report.module';
-import { ConfigModle } from './common/configModule';
 import { ConfigModule } from './dbConfig/dbConfig.module';
 
 @Module({
   imports: [
-    UserModule,PaymentModule,ReportModule,ConfigModule,
+    UserModule,PaymentModule,ReportModule,ConfigModule.forRoot({host:'localhost',port:5432,database:'crm'}),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {} 

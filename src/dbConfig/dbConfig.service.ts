@@ -1,9 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { dbConfig } from "./dbConfig.module";
+export interface dbConnection{
+    connectionString:string
+}
 
 @Injectable()
 export class DBConfigService{
-    constructor(@Inject('DATABASE')private config:typeof dbConfig){}
+    constructor(@Inject('DATABASE')private config:dbConnection){}
     async getDatabse(){
         return this.config;
     }
