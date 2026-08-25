@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { DBConfigService } from "./dbConfig.service";
 import { DBConfigController } from "./dbConfig.controller";
 export const dbConfig={
@@ -6,6 +6,7 @@ export const dbConfig={
     port: 5432,
     database: 'crm',
 }
+@Global()
 @Module({
     imports:[],
     controllers:[DBConfigController],
@@ -27,8 +28,6 @@ export const dbConfig={
         DBConfigService,
     ],
 
-    exports:[DBConfigService]
+    exports:[DBConfigService,'DATABASE']
 })
-export class ConfigModule{
-        
-}
+export class ConfigModule{}
