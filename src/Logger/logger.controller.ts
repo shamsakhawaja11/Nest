@@ -1,6 +1,8 @@
-import { Controller, Get, Inject, Post, Query } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Query, UseGuards } from "@nestjs/common";
 import { LoggerService } from "./logger.service";
+import { AuthGuard } from "src/Guards/authguard";
 
+@UseGuards(AuthGuard)
 @Controller('logger')
 export class LoggerController{
     constructor(private service:LoggerService,
