@@ -1,10 +1,11 @@
-import { Controller, Get, Inject, Post, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { LoggerService } from "./logger.service";
 import { AuthGuard } from "src/common/Guards/authguard";
 import { RolesGuard } from "src/common/Guards/roles.guard";
 import { Roles } from "src/common/decorators/customdecorators";
-@UseGuards(RolesGuard)
-@UseGuards(AuthGuard)
+import { TimingInterceptor } from "src/common/Interceptors/timing-interceptor";
+@UseGuards(AuthGuard,RolesGuard)
+@UseInterceptors(TimingInterceptor)
 @Controller('logger')
 export class LoggerController{
     constructor(private service:LoggerService,

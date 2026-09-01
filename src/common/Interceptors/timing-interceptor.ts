@@ -7,7 +7,7 @@ export class TimingInterceptor implements NestInterceptor{
         const time=Date.now();
         return next.handle().pipe(
             tap(()=>(
-                console.log(`time taken: ${time-Date.now()}`)
+                console.log(`time taken: ${Date.now()-time}`)
             ))
         );
     }
