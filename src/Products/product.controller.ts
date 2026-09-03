@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from "@nestjs/common";
 let products=["biscuit","watch","cake","macroni"];
 @Controller('products')
 export class ProductsController{
@@ -11,12 +11,17 @@ export class ProductsController{
     getProducts(){
         return products;
     }
+    @Get()
+    getproduct(@Query('category')categpry:string,@Query('limit')limit:string){
+        return {categpry,limit};
+    }
+    
     @Get(':id')
-    getId(){
-        return `id is here`;
+    getId(@Param('id')id:string){
+        return `id is here ${id}`;
     }
     @Post()
-    insertProducts(@Body() product:string){
+    insertProducts(@Body() product:any){
         products.push(product);
     }
     @Put()
