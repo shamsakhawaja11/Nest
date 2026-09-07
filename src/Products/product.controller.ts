@@ -18,7 +18,7 @@ export class ProductsController {
         }
         throw new NotFoundException(`${id} not found`)
 
-    }
+    }}
     @Post()
     insertProduct(@Body()product:any){
         if(product['name']==undefined||product['name']==""){
