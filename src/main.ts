@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ResponseInterceptor } from './common/Interceptors/response-interceptor';
 
 async function bootstrap() {
@@ -13,6 +13,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.enableVersioning({
+    type:VersioningType.URI
+  });
   app.useGlobalInterceptors(
     new ResponseInterceptor()
   )

@@ -1,4 +1,5 @@
-import { BadRequestException, Body, Controller, Delete, Get, Head, Header, Headers, HttpCode, NotFoundException, Param, Patch, Post, Put, Query, Res } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Head, Header, Headers, HttpCode, NotFoundException, Param, Patch, Post, Put, Query, Res, Version } from "@nestjs/common";
+import { count } from "console";
 
 let products={
     prod1: { id:8,name:'biscuit'},
@@ -6,9 +7,19 @@ let products={
 };
 
 import type{ Response } from "express";
-@Controller('products')
+
+@Controller({path:'products',version:'1'})
 export class ProductsController {
     
+    @Get()
+    @Version('2')
+    get(){
+        let count=0;
+        for(let item in products){
+            count++;
+        }
+        return {'data':products,'count':count};
+    }
     @Get(':id')
     getId(@Param('id')id:string){
         for(let item in products){
