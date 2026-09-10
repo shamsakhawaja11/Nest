@@ -21,23 +21,23 @@ export class ProductsController {
         return {'data':products,'count':count};
     }
     @Get(':id')
-    getId(@Param('id')id:string){
-        for(let item in products){
-            if(products[item].id==Number(id)){
+    getId(@Param('id') id: string) {
+        for (const item in products) {
+            if (products[item].id === Number(id)) {
                 return "id Found";
             }
         }
-        throw new NotFoundException(`${id} not found`)
+        throw new NotFoundException(`${id} not found`);
+    }
 
-    }}
     @Post()
-    insertProduct(@Body()product:any){
-        if(product['name']==undefined||product['name']==""){
-            throw new BadRequestException(`${name} is invalid`);
+    insertProduct(@Body() product: any) {
+        if (!product || !product.name || product.name === "") {
+            throw new BadRequestException("Product name is invalid");
         }
     }
     @Delete(':id')
-    deleteProduct(@Param('id')id:string){
+    delProduct(@Param('id') id:any){
         for(let item in products){
             if(products[item].id===Number(id)){
                 products[item]=null;

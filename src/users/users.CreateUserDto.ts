@@ -1,4 +1,5 @@
-import {IsEmail, IsNotEmpty, IsOptional, IsPositive, IsString, MinLength} from 'class-validator';
+import {IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, MinLength, Validate} from 'class-validator';
+import { MatchPassword } from 'src/common/custom-validators/matchpassword';
 
 export class CreateUserDto{
     @IsEmail()
@@ -8,9 +9,13 @@ export class CreateUserDto{
     @IsNotEmpty()
     @MinLength(8)
     password!:string
+    @Validate(MatchPassword)
+    confirmPassword!:string
     @IsOptional()
+    @IsString()
     name?:string
     @IsOptional()
     @IsPositive()
+    @IsInt()
     age?:number
 }

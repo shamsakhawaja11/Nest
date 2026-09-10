@@ -1,4 +1,4 @@
-import { Controller, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
 import { CreateUserDto } from "./users.CreateUserDto";
 import { UpdateUserDto } from "./users.UpdateUserDto";
 
@@ -6,12 +6,12 @@ import { UpdateUserDto } from "./users.UpdateUserDto";
 export class UsersController{
     
     @Post()
-    save(dto:CreateUserDto){
+    save(@Body()dto:CreateUserDto){
         console.log(`${dto.name} ${dto.age} ${dto.email} ${dto.password}`);
     }
 
-    @Patch()
-    update(dto:UpdateUserDto){
+    @Patch(':id')
+    update(@Body()dto:UpdateUserDto,@Param('id')id:string){
         console.log('updated')
     }
 
