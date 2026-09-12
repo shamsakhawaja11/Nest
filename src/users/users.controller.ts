@@ -1,8 +1,9 @@
 import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
 import { CreateUserDto } from "./users.CreateUserDto";
 import { UpdateUserDto } from "./users.UpdateUserDto";
+import { PositiveIntPipe } from "src/common/custom-pipes/parseintpipe";
 
-@Controller('/users')
+@Controller('/userss')
 export class UsersController{
     
     @Post()
@@ -11,7 +12,7 @@ export class UsersController{
     }
 
     @Patch(':id')
-    update(@Body()dto:UpdateUserDto,@Param('id')id:string){
+    update(@Body()dto:UpdateUserDto,@Param('id',PositiveIntPipe)id:number){
         console.log('updated')
     }
 
