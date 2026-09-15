@@ -25,7 +25,9 @@ export class AllExceptionFilters implements ExceptionFilter {
           success:false,
           statusCode:400,
           type:'VALIDATION_ERROR',
-          error:error.message,
+         // message:error.message,
+          message:typeof res==='string'?res : (res as any).message ?? exception.message,
+          path:req.url,
           timestamp:new Date().toISOString()
         });
       }
@@ -33,6 +35,7 @@ export class AllExceptionFilters implements ExceptionFilter {
       return res.status(status).json({
         success:false,
         statusCode:status,
+        type:'HTTP_EXCEPTION',
         message:exception.message,
         path:req.url,
         timestamp:new Date().toISOString()
@@ -42,7 +45,9 @@ export class AllExceptionFilters implements ExceptionFilter {
       res.status(500).json({
         success:false,
         statusCode:500,
+        type:'SERVER_ERROR',
         message:'Internal server error',
+        path:req.url,
         timestamp:new Date().toISOString()
       });
     }
