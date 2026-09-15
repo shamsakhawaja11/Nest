@@ -8,11 +8,12 @@ import { ConfigModule } from './dbConfig/dbConfig.module';
 import { RequestModdlewre } from './Middleware/reuest.middleware';
 import { ProductsModule } from './Products/product.module';
 import { UsersModule } from './users/users.module';
+import { ExceptionModule } from './common/Exception-Handling/exception.module';
 
 @Module({
   imports: [
     UserModule,PaymentModule,ReportModule,ConfigModule.forRoot({host:'localhost',port:5432,database:'crm'}),
-    ProductsModule,UsersModule
+    ProductsModule,UsersModule,ExceptionModule
   ],
   controllers: [AppController],
   providers: [AppService],
