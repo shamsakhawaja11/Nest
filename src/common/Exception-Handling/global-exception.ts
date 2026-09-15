@@ -1,69 +1,113 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { ArgumentsHost,BadRequestException,Catch,ExceptionFilter,HttpException,Logger} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
+
+interface ErrorPayload {
+  success: false;
+  statusCode: number;
+  message: string | string[];
+  error: string;
+  path: string;
+  timestamp: string;
+}
 
 @Catch()
-export class GlobalExceptionFilter implements ExceptionFilter{
-    private readonly logger=new Logger(GlobalExceptionFilter.name)
-    catch(exception: unknown, host: ArgumentsHost) {
-        const ctx = host.switchToHttp()
-        const req = ctx.getRequest<Request>()
-        const res = ctx.getResponse<Response>()
+export class GlobalExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
 
-        if (exception instanceof HttpException) {
-            if (
-                exception instanceof BadRequestException &&
-                exception.getStatus() === 400 &&
-                typeof exception.getResponse() === 'object' &&
-                exception.getResponse() !== null &&
-                'message' in exception.getResponse() &&
-                Array.isArray(exception.getResponse().message)
-            ) {
-                const error=exception.getResponse() as string || object
-                return res.status(400).json(this.buildErrorPayload(400, error.message, 'VALIDATION_ERROR',req.url))
-        
-            }
-            const status = exception.getStatus()
-            return res.status(status).json(
-                this.buildErrorPayload(status, exception.message, exception.constructor.name,req.url)
-            );
-        }
-        else {
-            if(
-                exception instanceof Prisma.PrismaClientKnownRequestError &&
-                exception.code === 'P2002'
-            ) {
-                return res.status(409).json(
-                    this.buildErrorPayload(409, exception.message, 'CONFLICT_ERROR', req.url)
-                );
-            }
-            else if (
-                exception instanceof Prisma.PrismaClientKnownRequestError &&
-                exception.code === 'P2025'        
-            ) {
-                return res.status(404).json(
-                    this.buildErrorPayload(404, exception.message, 'RECORD_NOT_FOUND', req.url)
-                );
-            }
-            else {
-                if(exception instanceof InternalServerErrorException) {
-                    return res.status(500).json(
-                        this.buildErrorPayload(500, exception.message, 'SERVER_ERROR', req.url)
-                    );
-                }
-            }
-        }     
-        console.log(`${this.logger.error} stack: ${exception.stack}`)
-   
-    }
-    private buildErrorPayload (status, message, error, path) {
-        return {
-            success: false,
-            statusCode: status,
-            message: message,
-            error: error,
-            path: path,
-            timestamp: new Date().toISOString()
-        }
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const req = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
+
+    const payload = this.resolvePayload(exception, req.url);
+
+    // Requirement 4: severity-based logging
+    if (payload.statusCode >= 500) {
+      this.logger.error(
+        exception instanceof Error ? exception.stack : exception,
+      );
+    } else {
+      this.logger.warn(
+        `${payload.statusCode} ${payload.error} - ${req.method} ${req.url} - ${JSON.stringify(payload.message)}`,
+      );
     }
 
+    res.status(payload.statusCode).json(payload);
+  }
+
+  private resolvePayload(exception: unknown, path: string): ErrorPayload {
+    // 1. Validation errors (must be checked before the generic HttpException case)
+    if (exception instanceof BadRequestException) {
+      const responseBody = exception.getResponse();
+      if (
+        typeof responseBody === 'object' &&
+        responseBody !== null &&
+        'message' in responseBody &&
+        Array.isArray((responseBody as any).message)
+      ) {
+        return this.buildErrorPayload(
+          400,
+          (responseBody as any).message,
+          'VALIDATION_ERROR',
+          path,
+        );
+      }
+    }
+
+    // 2. Any other intentionally-thrown HttpException
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      return this.buildErrorPayload(
+        status,
+        exception.message,
+        exception.constructor.name,
+        path,
+      );
+    }
+
+    // 3. Known Prisma error codes
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      if (exception.code === 'P2002') {
+        return this.buildErrorPayload(
+          409,
+          'A record with this value already exists',
+          'CONFLICT_ERROR',
+          path,
+        );
+      }
+      if (exception.code === 'P2025') {
+        return this.buildErrorPayload(
+          404,
+          'Record not found',
+          'RECORD_NOT_FOUND',
+          path,
+        );
+      }
+    }
+
+    // 4. Truly unknown — never leak internals
+    return this.buildErrorPayload(
+      500,
+      'Internal server error',
+      'SERVER_ERROR',
+      path,
+    );
+  }
+
+  private buildErrorPayload(
+    statusCode: number,
+    message: string | string[],
+    error: string,
+    path: string,
+  ): ErrorPayload {
+    return {
+      success: false,
+      statusCode,
+      message,
+      error,
+      path,
+      timestamp: new Date().toISOString(),
+    };
+  }
 }
