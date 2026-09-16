@@ -5,10 +5,11 @@ import { UserModule } from './user/user.module';
 import { PaymentModule } from './paymentservice/paymentservice.module';
 import { ReportModule } from './Report/report.module';
 import { ConfigModule } from './dbConfig/dbConfig.module';
-import { RequestModdlewre } from './Middleware/reuest.middleware';
 import { ProductsModule } from './Products/product.module';
 import { UsersModule } from './users/users.module';
 import { ExceptionModule } from './common/Exception-Handling/exception.module';
+import { RequestIdMiddleware } from './common/Middleware/RequestId-middleware';
+import { LoggingMiddleware } from './common/Middleware/Logging-Middleware';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { ExceptionModule } from './common/Exception-Handling/exception.module';
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestModdlewre).forRoutes('*');
+    consumer.apply(RequestIdMiddleware,LoggingMiddleware).forRoutes('*')
   }
 } 
