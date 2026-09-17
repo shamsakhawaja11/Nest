@@ -3,7 +3,11 @@ import { Injectable, NestMiddleware } from "@nestjs/common";
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware{
     use(req: any, res: any, next: (error?: any) => void) {
-        console.log(req['url'],req['method'],req['requestId'])
+        const time=Date.now()
+        res.on('finish',() => {
+            let endTime=Date.now()
+            console.log(`${req['url']}/${req['method']}\t${req['requestId']}-${endTime-time} `)
+        })
         next()
     }
 }
