@@ -6,4 +6,4 @@ import { UsersController } from "./users.controller";
     imports:[],
     providers:[],
     exports:[],
-})export class UsersModule{}
+})export class UserssModule{}

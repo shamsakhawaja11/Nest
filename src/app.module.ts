@@ -6,7 +6,7 @@ import { PaymentModule } from './paymentservice/paymentservice.module';
 import { ReportModule } from './Report/report.module';
 import { ConfigModule } from './dbConfig/dbConfig.module';
 import { ProductsModule } from './Products/product.module';
-import { UsersModule } from './users/users.module';
+import { UserssModule } from './users/users.module';
 import { ExceptionModule } from './common/Exception-Handling/exception.module';
 import { RequestIdMiddleware } from './common/Middleware/RequestId-middleware';
 import { LoggingMiddleware } from './common/Middleware/Logging-Middleware';
@@ -14,7 +14,8 @@ import { LoggingMiddleware } from './common/Middleware/Logging-Middleware';
 @Module({
   imports: [
     UserModule,PaymentModule,ReportModule,ConfigModule.forRoot({host:'localhost',port:5432,database:'crm'}),
-    ProductsModule,UsersModule,ExceptionModule
+    ProductsModule,ExceptionModule,UserssModule
+
   ],
   controllers: [AppController],
   providers: [AppService],
