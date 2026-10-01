@@ -14,8 +14,10 @@ export class AuthGuard2 implements CanActivate {
     if (token !== 'valid') {
       throw new UnauthorizedException('not allowed');
     }
-    //req.user = { id: 1, name: 'shamsa', role: 'admin' };
+    req.user = { id: 1, name: 'shamsa', role: 'admin' };
     req.user = { id: 2, name: 'hamna', role: 'admin' };
+    req.user = { id: 3, name: 'amna', role: 'admin' };
+
     return true;
   }
 }
